@@ -7,7 +7,7 @@ ifeq ($(DEBUG), true)
 	CXXFLAGS := -Wall -Wextra -pedantic -g3 -fsanitize=undefined
 endif
 LIB ?= -lm -lpthread -ldl -lcrypt
-COMP := $(MY_CXX) $(CFLAGS) $(LIB)
+COMP := $(MY_CXX) $(CXXFLAGS) $(LIB)
 
 NAME ?= bin
 INC := $(wildcard inc/*)
