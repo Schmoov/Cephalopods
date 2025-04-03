@@ -4,7 +4,7 @@ ifeq ($(FF), true)
 	CXXFLAGS := -Wall -Wextra -pedantic
 endif
 ifeq ($(DEBUG), true)
-	CXXFLAGS := -Wall -Wextra -pedantic -g3 -fsanitize=undefined
+	CXXFLAGS := -Wall -Wextra -pedantic -g3 #-fsanitize=undefined
 endif
 LIB ?= -lm -lpthread -ldl -lcrypt
 COMP := $(MY_CXX) $(CXXFLAGS) $(LIB)

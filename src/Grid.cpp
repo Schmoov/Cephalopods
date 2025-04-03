@@ -1,6 +1,6 @@
 #include "../inc/Cepha.hpp"
 
-Grid::Grid() : g(9), c(9, vector<bool>(6, false))
+Grid::Grid() : g(9), c(9, vector<bool>(7, false))
 {
 	cin >> d; cin.ignore();
 	for (int i = 0; i < 9; i++) {
@@ -9,7 +9,7 @@ Grid::Grid() : g(9), c(9, vector<bool>(6, false))
 	legal();
 }
 
-Grid::Grid(Grid& og, int pos, int capt) : g(9), c(9, vector<bool>(6, false))
+Grid::Grid(Grid& og, int pos, int capt) : g(9), c(9, vector<bool>(7, false))
 {
 	d = og.d - 1;
 	g = og.g;
@@ -103,6 +103,7 @@ int Grid::toInt()
 
 int Grid::solve()
 {
+	cerr << *this;
 	if (!d)
 		return toInt();
 	int res = 0;
@@ -125,13 +126,19 @@ std::ostream& operator<<(std::ostream& os, Grid& grid)
 {
 	os << "depth : " << grid.d << endl;
 	for (int i = 0; i < 3; i++) {
-		os << "________\n";
 		for (int j = 0; j < 3; j++) {
 			os << "|" << grid.g[3*i+j];
 		}
 		os << "|\n";
 	}
-	os << "________\n";
+//	for (int k = 0; k < 7; k++) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			os << "|" << (grid.c[3*i+j][0] ? "V" : "X");
+		}
+		os << "|\n";
+	}
+//	}
 
 	return os;
 }

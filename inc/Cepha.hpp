@@ -16,6 +16,6 @@ public:
 	void capture(int pos, int capt);
 	int toInt();
 	int solve();
-	friend std::ostream& operator<<(std::ostream& os, const Grid& grid);
+	friend std::ostream& operator<<(std::ostream& os, Grid& grid);
 };
 
