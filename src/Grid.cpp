@@ -6,31 +6,31 @@ board parse()
 	for (int i = 0; i < 9; i++) {
 		int value;
 		cin >> value; cin.ignore();
-		res |= static_cast<board>(value)<<(8*i);
+		res |= static_cast<board>(value)<<(4*i);
 	}
 	return res;
 }
 
 constexpr board capture(board g, int pos, int capt, int val)
 {
-	board res = g | (static_cast<board>(val) << (8*pos));
+	board res = g | (static_cast<board>(val) << (4*pos));
 	board mask = 0;
-	board sub = 0xFF;
+	board sub = 0x0F;
 	if (capt & 8)
-		mask |= sub << (8*(pos-3));
+		mask |= sub << (4*(pos-3));
 	if (capt & 4)
-		mask |= sub << (8*(pos+1));
+		mask |= sub << (4*(pos+1));
 	if (capt & 2)
-		mask |= sub << (8*(pos+3));
+		mask |= sub << (4*(pos+3));
 	if (capt & 1)
-		mask |= sub << (8*(pos-1));
+		mask |= sub << (4*(pos-1));
 	return (res & ~mask);
 }
 
 constexpr board gAtPos(board g, int pos)
 {
-	board sub = 0xFF;
-	return sub & (g >> (8*pos));
+	board sub = 0x0F;
+	return sub & (g >> (4*pos));
 }
 
 void legal(int (*c)[16], board g)
