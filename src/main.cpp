@@ -1,5 +1,6 @@
 #include "../inc/Cepha.hpp"
 
+unordered_map<ll, ll> memo;
 int main()
 {
 	ios::sync_with_stdio(false);

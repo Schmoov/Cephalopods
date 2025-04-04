@@ -6,17 +6,35 @@ Grid::Grid()
 	for (int i = 0; i < 9; i++) {
 		cin >> g[i]; cin.ignore();
 	}
+	sh = toInt();
 }
 
 Grid::Grid(Grid& og, int pos, int capt)
 {
 	d = og.d - 1;
 	memcpy(g, og.g, sizeof(g));
-	capture(pos, capt, og.c[pos][capt]);
+	capture(pos, capt, og.c[pos][capt], og.sh);
+	sh = toInt();
 }
 
-void Grid::capture(int pos, int capt, int val)
+void Grid::capture(int pos, int capt, int val, ll old_sh)
 {
+	/*
+	ll power = 1;
+	for (int i = 0; i < pos; i++) {
+		power *= 10;
+	}
+
+	if (capt & 8)
+		old_sh -= g[pos]*pow(10, pos
+	if (capt & 4)
+		g[pos+1] = 0;
+	if (capt & 2)
+		g[pos+3] = 0;
+	if (capt & 1)
+		g[pos-1] = 0;
+	*/
+
 	g[pos] = val;
 	if (capt & 8)
 		g[pos-3] = 0;
@@ -80,7 +98,6 @@ ll Grid::toInt()
 
 ll Grid::solve()
 {
-	ll sh = toInt();
 	if (!d)
 		return sh;
 	ll hash = (sh << 8) | d;
@@ -100,7 +117,7 @@ ll Grid::solve()
 		}
 	}
 	if (final)
-		return toInt();
+		return sh;
 	memo[hash] = res; 
 	return res;
 }
