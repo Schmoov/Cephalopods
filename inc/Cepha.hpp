@@ -6,6 +6,7 @@
 
 using namespace std;
 using ll = long long;
+
 extern unordered_map<ll, ll> memo;
 
 class Grid {

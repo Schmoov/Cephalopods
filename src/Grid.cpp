@@ -101,8 +101,9 @@ ll Grid::solve()
 	if (!d)
 		return sh;
 	ll hash = (sh << 8) | d;
-	if (memo.find(hash) != memo.end())
-		return memo[hash]; 
+	auto it = memo.find(hash);
+	if (it != memo.end())
+		return it->second; 
 	legal();
 
 	ll res = 0;

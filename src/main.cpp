@@ -6,7 +6,7 @@ int main()
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
 
-	memo.reserve(2'000'000);
+	memo.reserve(1<<20);
 	Grid input;
 	//Grid next(input, 0, 0);
 	//cerr << next;
