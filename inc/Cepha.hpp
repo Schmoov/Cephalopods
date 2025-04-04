@@ -5,7 +5,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-using ll = long long;
+using ll = unsigned long long;
 
 extern unordered_map<ll, ll> memo;
 
@@ -25,4 +25,3 @@ public:
 	ll solve();
 	//friend std::ostream& operator<<(std::ostream& os, Grid& grid);
 };
-

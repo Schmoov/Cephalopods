@@ -21,18 +21,20 @@ void Grid::capture(int pos, int capt, int val, ll old_sh)
 {
 	/*
 	ll power = 1;
-	for (int i = 0; i < pos; i++) {
+	for (int i = pos; i < 8; i++) {
 		power *= 10;
 	}
 
 	if (capt & 8)
-		old_sh -= g[pos]*pow(10, pos
+		old_sh -= 1000*power*g[pos-3];
 	if (capt & 4)
-		g[pos+1] = 0;
+		old_sh -= power/10*g[pos+1];
 	if (capt & 2)
-		g[pos+3] = 0;
+		old_sh -= power/1000*g[pos+3];
 	if (capt & 1)
-		g[pos-1] = 0;
+		old_sh -= 10*power*g[pos-1];
+	old_sh += power*val;
+	sh = old_sh;
 	*/
 
 	g[pos] = val;
@@ -113,7 +115,7 @@ ll Grid::solve()
 			if (c[pos][capt]) {
 				final = false;
 				Grid next(*this, pos, capt);
-				res = (res + next.solve()) % (1LL<<30);
+				res += next.solve();
 			}
 		}
 	}

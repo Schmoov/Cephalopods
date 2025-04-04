@@ -11,5 +11,5 @@ int main()
 	//Grid next(input, 0, 0);
 	//cerr << next;
 	//cerr << next.toInt();
-	cout << input.solve() << "\n";
+	cout << input.solve()%(1<<30) << "\n";
 }
