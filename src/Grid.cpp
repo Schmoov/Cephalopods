@@ -13,11 +13,11 @@ Grid::Grid(Grid& og, int pos, int capt)
 {
 	d = og.d - 1;
 	memcpy(g, og.g, sizeof(g));
-	capture(pos, capt, og.c[pos][capt]);
+	capture(pos, capt, og.c[pos][capt], og.sh);
 	sh = toInt();
 }
 
-void Grid::capture(int pos, int capt, int val)
+void Grid::capture(int pos, int capt, int val, ll ntm)
 {
 	g[pos] = val;
 	if (capt & 8)
