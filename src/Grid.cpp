@@ -1,22 +1,18 @@
 #include "../inc/Cepha.hpp"
 
-unordered_map<ll, ll> Grid::memo;
-
-Grid::Grid() : g(9), c(9, vector<int>(16, 0))
+Grid::Grid()
 {
 	cin >> d; cin.ignore();
 	for (int i = 0; i < 9; i++) {
 		cin >> g[i]; cin.ignore();
 	}
-	legal();
 }
 
-Grid::Grid(Grid& og, int pos, int capt) : g(9), c(9, vector<int>(16, 0))
+Grid::Grid(Grid& og, int pos, int capt)
 {
 	d = og.d - 1;
-	g = og.g;
+	memcpy(g, og.g, sizeof(g));
 	capture(pos, capt, og.c[pos][capt]);
-	legal();
 }
 
 void Grid::capture(int pos, int capt, int val)
@@ -34,6 +30,7 @@ void Grid::capture(int pos, int capt, int val)
 
 void Grid::legal()
 {
+	memset(c, 0, sizeof(c));
 	for (int pos = 0; pos < 9; pos++) {
 		if (g[pos])
 			continue;
@@ -83,12 +80,14 @@ ll Grid::toInt()
 
 ll Grid::solve()
 {
-	ll hash = (toInt() << 8) | d;
+	ll sh = toInt();
+	if (!d)
+		return sh;
+	ll hash = (sh << 8) | d;
 	if (memo.find(hash) != memo.end())
 		return memo[hash]; 
-	//cerr << *this;
-	if (!d)
-		return toInt();
+	legal();
+
 	ll res = 0;
 	bool final = true;
 	for (int pos = 0; pos < 9; pos++) {
@@ -106,6 +105,7 @@ ll Grid::solve()
 	return res;
 }
 
+/*
 std::ostream& operator<<(std::ostream& os, Grid& grid)
 {
 	os << "depth : " << grid.d << endl;
@@ -126,3 +126,4 @@ std::ostream& operator<<(std::ostream& os, Grid& grid)
 
 	return os;
 }
+*/

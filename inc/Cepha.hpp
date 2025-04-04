@@ -6,14 +6,13 @@
 
 using namespace std;
 using ll = long long;
+unordered_map<ll, ll> memo;
 
 class Grid {
 public:
-	static unordered_map<ll, ll> memo;
-
-	int						d;
-	vector<int>				g;
-	vector<vector<int>>		c;
+	int	d;
+	int	g[9];
+	int	c[9][16];
 
 	Grid();
 	Grid(Grid& og, int pos, int capt);
@@ -22,6 +21,6 @@ public:
 	void capture(int pos, int capt, int val);
 	ll toInt();
 	ll solve();
-	friend std::ostream& operator<<(std::ostream& os, Grid& grid);
+	//friend std::ostream& operator<<(std::ostream& os, Grid& grid);
 };
 

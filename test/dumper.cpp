@@ -19,7 +19,7 @@ int main()
         for (int j = 0; j < 3; j++) {
             int value;
             cin >> value; cin.ignore();
-			cerr << value << " ";
+			cerr << value << (i==2&&j==2 ? "":" ");
         }
     }
 

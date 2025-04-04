@@ -16,13 +16,16 @@ SRC := $(wildcard src/*)
 all: $(NAME)
 
 $(NAME):
-	#cat $(INC) $(SRC) > $(NAME).txt
 	$(COMP) $(SRC) -o $(NAME)
+
+text :
+	cat $(INC) $(SRC) > $(NAME).txt
 
 sub:
 	cat $(INC) <(tail -q -n+2 $(SRC)) | xclip -selection clipboard
 
 clean:
 	rm -f ./bin
+	rm -f ./bin.txt
 
 re : clean all sub
