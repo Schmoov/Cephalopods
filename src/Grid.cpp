@@ -1,40 +1,42 @@
 #include "../inc/Cepha.hpp"
 
-Grid::Grid()
+board parse()
 {
-	cin >> d; cin.ignore();
+	board res = 0;
 	for (int i = 0; i < 9; i++) {
-		cin >> g[i]; cin.ignore();
+		int value;
+		cin >> value; cin.ignore();
+		res |= static_cast<board>(value)<<(8*i);
 	}
-	sh = toInt();
+	return res;
 }
 
-Grid::Grid(Grid& og, int pos, int capt)
+constexpr board capture(board g, int pos, int capt, int val)
 {
-	d = og.d - 1;
-	memcpy(g, og.g, sizeof(g));
-	capture(pos, capt, og.c[pos][capt], og.sh);
-	sh = toInt();
-}
-
-void Grid::capture(int pos, int capt, int val, ll ntm)
-{
-	g[pos] = val;
+	board res = g | (static_cast<board>(val) << (8*pos));
+	board mask = 0;
+	board sub = 0xFF;
 	if (capt & 8)
-		g[pos-3] = 0;
+		mask |= sub << (8*(pos-3));
 	if (capt & 4)
-		g[pos+1] = 0;
+		mask |= sub << (8*(pos+1));
 	if (capt & 2)
-		g[pos+3] = 0;
+		mask |= sub << (8*(pos+3));
 	if (capt & 1)
-		g[pos-1] = 0;
+		mask |= sub << (8*(pos-1));
+	return (res & ~mask);
 }
 
-void Grid::legal()
+constexpr board gAtPos(board g, int pos)
 {
-	memset(c, 0, sizeof(c));
+	board sub = 0xFF;
+	return sub & (g >> (8*pos));
+}
+
+void legal(int (*c)[16], board g)
+{
 	for (int pos = 0; pos < 9; pos++) {
-		if (g[pos])
+		if (gAtPos(g, pos))
 			continue;
 		c[pos][0] = 1;
 		for (int capt = 1; capt < 16; capt++) {
@@ -42,24 +44,24 @@ void Grid::legal()
 				continue;
 			int res = 0;
 			if (capt & 8) {
-				if (pos < 3 || !g[pos-3])
+				if (pos < 3 || !gAtPos(g, pos-3))
 					continue;
-				res += g[pos-3];
+				res += gAtPos(g, pos-3);
 			}
 			if (capt & 4) {
-				if (pos%3 == 2 || !g[pos+1])
+				if (pos%3 == 2 || !gAtPos(g, pos+1))
 					continue;
-				res += g[pos+1];
+				res += gAtPos(g, pos+1);
 			}
 			if (capt & 2) {
-				if (pos >= 6 || !g[pos+3])
+				if (pos >= 6 || !gAtPos(g, pos+3))
 					continue;
-				res += g[pos+3];
+				res += gAtPos(g, pos+3);
 			}
 			if (capt & 1) {
-				if (pos%3 == 0 || !g[pos-1])
+				if (pos%3 == 0 || !gAtPos(g, pos-1))
 					continue;
-				res += g[pos-1];
+				res += gAtPos(g, pos-1);
 			}
 
 			if (res > 6)
@@ -70,25 +72,27 @@ void Grid::legal()
 	}
 }
 
-ll Grid::toInt()
+ll boardHash(board g)
 {
 	ll res = 0;
 	for (int i = 0; i < 9; i++) {
 		res *= 10;
-		res += g[i];
+		res += gAtPos(g, i);
 	}
 	return res;
 }
 
-ll Grid::solve()
+ll solve(int d, board g)
 {
 	if (!d)
-		return sh;
-	ll hash = (sh << 8) | d;
+		return boardHash(g);
+	ll hash = (boardHash(g) << 8) | d;
 	auto it = memo.find(hash);
 	if (it != memo.end())
 		return it->second; 
-	legal();
+	
+	int c[9][16] = {0};
+	legal(c, g);
 
 	ll res = 0;
 	bool final = true;
@@ -96,36 +100,12 @@ ll Grid::solve()
 		for (int capt = 0; capt < 16; capt++) {
 			if (c[pos][capt]) {
 				final = false;
-				Grid next(*this, pos, capt);
-				res += next.solve();
+				res += solve(d-1, capture(g, pos, capt, c[pos][capt]));
 			}
 		}
 	}
 	if (final)
-		return sh;
+		return boardHash(g);
 	memo[hash] = res; 
 	return res;
 }
-
-/*
-std::ostream& operator<<(std::ostream& os, Grid& grid)
-{
-	os << "depth : " << grid.d << endl;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			os << "|" << grid.g[3*i+j];
-		}
-		os << "|\n";
-	}
-//	for (int k = 0; k < 7; k++) {
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			os << "|" << (grid.c[3*i+j][0] ? "V" : "X");
-		}
-		os << "|\n";
-	}
-//	}
-
-	return os;
-}
-*/
