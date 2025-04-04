@@ -2,11 +2,11 @@ SHELL := /bin/bash
 MY_CXX ?=g++-11 -std=c++20
 
 ifeq ($(FF), true)
-	CXXFLAGS := -Wall -Wextra -pedantic
+	CXXFLAGS := -Wall -Wextra -pedantic -fsanitize=undefined
 endif
 
 ifeq ($(DEBUG), true)
-	CXXFLAGS := -Wall -Wextra -pedantic -g3 #-fsanitize=undefined
+	CXXFLAGS := -Wall -Wextra -pedantic -g3 #
 endif
 
 LIB ?= -lm -lpthread -ldl -lcrypt

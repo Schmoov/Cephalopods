@@ -20,7 +20,7 @@ public:
 	Grid(Grid& og, int pos, int capt);
 
 	void legal();
-	void capture(int pos, int capt, int val, ll ols_sh);
+	void capture(int pos, int capt, int val);
 	ll toInt();
 	ll solve();
 	//friend std::ostream& operator<<(std::ostream& os, Grid& grid);

@@ -13,30 +13,12 @@ Grid::Grid(Grid& og, int pos, int capt)
 {
 	d = og.d - 1;
 	memcpy(g, og.g, sizeof(g));
-	capture(pos, capt, og.c[pos][capt], og.sh);
+	capture(pos, capt, og.c[pos][capt]);
 	sh = toInt();
 }
 
-void Grid::capture(int pos, int capt, int val, ll old_sh)
+void Grid::capture(int pos, int capt, int val)
 {
-	/*
-	ll power = 1;
-	for (int i = pos; i < 8; i++) {
-		power *= 10;
-	}
-
-	if (capt & 8)
-		old_sh -= 1000*power*g[pos-3];
-	if (capt & 4)
-		old_sh -= power/10*g[pos+1];
-	if (capt & 2)
-		old_sh -= power/1000*g[pos+3];
-	if (capt & 1)
-		old_sh -= 10*power*g[pos-1];
-	old_sh += power*val;
-	sh = old_sh;
-	*/
-
 	g[pos] = val;
 	if (capt & 8)
 		g[pos-3] = 0;
