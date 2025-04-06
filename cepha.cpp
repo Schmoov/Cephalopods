@@ -1,3 +1,4 @@
+#include <cstdint>
 #ifndef BENCH
 #undef _GLIBCXX_DEBUG
 #pragma GCC optimize "Ofast,unroll-loops,omit-frame-pointer,inline"
@@ -22,18 +23,17 @@ const int_fast8_t perm[8][9] = {
 	{2,5,8,1,4,7,0,3,6}
 };
 
-struct alignas(64) State {
-	const int_fast8_t d;
+struct State {
 	int g[9];
 
-	State(const int_fast8_t depth) : d(depth) {
+	State() {
 		for (int i = 0; i < 9; i++) {
 			cin >> g[i]; cin.ignore();
 		}
 	}
-	State(const State& s, int_fast8_t pos, int_fast8_t capt, int_fast8_t val) : d(s.d-1) {
-		for (int i = 0; i < 9; i++)
-			g[i] = s.g[i];
+
+	State(const State& s, int_fast8_t pos, int_fast8_t capt, int_fast8_t val) {
+		memcpy(g, s.g, sizeof(g));
 		g[pos] = val;
 		if (capt & 8)
 			g[pos-3] = 0;
@@ -45,44 +45,24 @@ struct alignas(64) State {
 			g[pos-1] = 0;
 	}
 
-	constexpr pair<size_t, int_fast8_t> hash() const;
-};
-
-struct Value {
-	int v[9];
-
-	const Value& operator=(const State& s) {
-		memcpy(v, s.g, sizeof(v));
-		return *this;
-	}
-
-	void operator+=(const Value& o) {
-		for (int i = 0; i < 9; i++) v[i] += o.v[i];
-	}
-
-	int output() const {
-		int res = 0;
-		for (int i = 0; i < 9; i++) {
-			res = res + v[i]*P10[i];
-		}
-		return res&M30;
-	}
-};
-unordered_map<size_t, Value> memo;
-
-constexpr pair<size_t, int_fast8_t> State::hash() const {
-	pair<size_t, int_fast8_t> res = {SIZE_MAX, 0};
-	for (int k = 0; k < 8; k++) {
-		size_t alt = d;
+	uint32_t hash() const {
+		uint32_t res = 0;
 		for (int i = 0; i < 9; i++)
-			alt = (alt << 4) | g[perm[k][i]];
-		if (alt < res.first) {
-			res.first = alt;
-			res.second = k;
-		}
+			res = (res << 3) | g[i];
+		return res;
 	}
-	return res;
+};
+
+void printState(const State& s) {
+    for (int i = 0; i < 9; i++) {
+        if (i % 3 == 0 && i != 0) {
+            cout << "\n";  // Move to the next row after 3 elements
+        }
+        cout << s.g[i] << " ";
+    }
+    cout << "\n----------\n";
 }
+unordered_map<uint32_t, uint32_t> memo;
 
 int_fast8_t legal(const State& s, int_fast8_t pos, int_fast8_t capt)
 {
@@ -108,76 +88,92 @@ int_fast8_t legal(const State& s, int_fast8_t pos, int_fast8_t capt)
 			return 0;
 	return res;
 }
-
-constexpr void permute(Value& v, const Value& og, const int_fast8_t k)
-{
-	for (int i = 0; i < 9; i++)
-		v.v[i] = og.v[perm[k][i]];
+uint outputH(uint32_t hash) {
+	int res = 0;
+	uint32_t mask = 0x7;
+	for (int i = 0; i < 9; i++) {
+		res = res + (hash & mask)*P10[i];
+		mask <<= 3;
+	}
+	return res;
 }
 
-void solve(const State& s, Value& v)
+uint solve(const State& og, int depth)
 {
-	if (!s.d) {
-		v = s;
-		return;
-	}
-
-	const auto& hash = s.hash();
-	const auto& it = memo.find(hash.first);
-	if (it != memo.end()) {
-		int_fast8_t k = hash.second;
-		if (k==7)
-			k=6;
-		else if (k==6)
-			k=7;
-		permute(v, it->second, k);
-		return;
-	} 
-	Value res{0};
-	bool final = true;
-
-	for (int_fast8_t pos = 0; pos < 9; pos++) {
-		if (s.g[pos])
-			continue;
-		final = false;
-		bool has_cap = false;
-		for (int_fast8_t capt = 3; capt < 16; capt++) {
-			if (capt == 4 || capt == 8)
-				continue;
-			int_fast8_t val = legal(s, pos, capt);
-			if (val) {
-				has_cap = true;
-				State next(s, pos, capt, val);
-				Value child{0};
-				solve(next, child);
-				res+=child;
+	uint res = 0;
+	uint32_t dp[2][1<<15];
+	memset(dp, 0, sizeof(dp));
+	int new_idx = 1;
+	bool sub_idx = 0;
+	memo[og.hash()] = 0;
+	dp[0][0] = 1;
+	queue<State> q;
+	q.push(og);
+	for (int d = depth; d > 0 && !q.empty(); d--, sub_idx ^= 1) {
+		int n = q.size();
+		while (n--) {
+			const State& s = q.front();
+			q.pop();
+			int idx = memo[s.hash()];
+			bool final = true;
+			for (int_fast8_t pos = 0; pos < 9; pos++) {
+				if (s.g[pos])
+					continue;
+				final = false;
+				bool has_cap = false;
+				for (int_fast8_t capt = 3; capt < 16; capt++) {
+					if (capt == 4 || capt == 8)
+						continue;
+					int_fast8_t val = legal(s, pos, capt);
+					if (val) {
+						has_cap = true;
+						State next(s, pos, capt, val);
+						uint32_t nextH = next.hash();
+						const auto& it = memo.find(nextH);
+						if (it == memo.end()) {
+							memo[nextH] = new_idx;
+							dp[!sub_idx][new_idx++] = dp[sub_idx][idx];
+						} else {
+							dp[!sub_idx][it->second] += dp[sub_idx][idx];
+						}
+						q.push(next);
+					}
+				}
+				if (!has_cap) {
+					State next(s, pos, 0, 1);
+					uint32_t nextH = next.hash();
+					const auto& it = memo.find(nextH);
+					if (it == memo.end()) {
+						memo[nextH] = new_idx;
+						dp[!sub_idx][new_idx++] = dp[sub_idx][idx];
+					} else {
+						dp[!sub_idx][it->second] += dp[sub_idx][idx];
+					}
+					q.push(next);
+				}
+			}
+			if (final) {
+				res += outputH(s.hash())*dp[sub_idx][idx];
+				printState(s);
+				cerr << res << endl;
 			}
 		}
-		if (!has_cap) {
-			State next(s, pos, 0, 1);
-			Value child{0};
-			solve(next, child);
-			res+=child;
-		} 
+		memset(dp[sub_idx], 0, sizeof(dp[sub_idx]));
 	}
-	if (final)
-		res = s;
-	permute(memo[hash.first], res, hash.second);
-	v=res;
+	for (const auto& it : memo)
+		res += dp[sub_idx][it.second]*outputH(it.first);
+	return res&M30;
 }
 
 int main()
 {
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
-	memo.reserve(1<<19);
+	memo.reserve(1<<15);
 
 	int depth;
 	cin >> depth; cin.ignore();
 
-	State input(depth);
-	Value ans{0};
-	solve(input, ans);
-
-	cout << (ans.output()) << "\n";
+	State input;
+	cout << (solve(input, depth)) << '\n';
 }
