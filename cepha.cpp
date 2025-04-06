@@ -10,8 +10,8 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-constexpr int M30 = 0x3fffffff;
-constexpr int P10[9] = {100'000'000, 10'000'000, 1'000'000, 100'000, 10'000, 1'000, 100, 10, 1};
+constexpr uint M30 = 0x3fffffff;
+constexpr uint P10[9] = {100'000'000, 10'000'000, 1'000'000, 100'000, 10'000, 1'000, 100, 10, 1};
 const int_fast8_t perm[8][9] = {
 	{0,1,2,3,4,5,6,7,8},
 	{2,1,0,5,4,3,8,7,6},
@@ -89,10 +89,10 @@ int_fast8_t legal(const State& s, int_fast8_t pos, int_fast8_t capt)
 	return res;
 }
 uint outputH(uint32_t hash) {
-	int res = 0;
+	uint res = 0;
 	uint32_t mask = 0x7;
 	for (int i = 0; i < 9; i++) {
-		res = res + (hash & mask)*P10[i];
+		res = (res + (hash & mask)*P10[i])&M30;
 		mask <<= 3;
 	}
 	return res;
@@ -178,6 +178,7 @@ int main()
 	cin.tie(nullptr);
 	memo.reserve(1<<15);
 
+	cerr << "PUTAIN " << ((2*outputH(0161222161))&M30) << endl;
 	int depth;
 	cin >> depth; cin.ignore();
 
