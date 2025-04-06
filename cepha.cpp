@@ -92,7 +92,7 @@ uint outputH(uint32_t hash) {
 	uint res = 0;
 	uint32_t mask = 0x7;
 	for (int i = 0; i < 9; i++) {
-		res = (res + (hash & mask)*P10[i])&M30;
+		res = (res + ((hash & mask)>>3*i)*P10[8-i])&M30;
 		mask <<= 3;
 	}
 	return res;
@@ -110,9 +110,11 @@ uint solve(const State& og, int depth)
 	queue<State> q;
 	q.push(og);
 	for (int d = depth; d > 0 && !q.empty(); d--, sub_idx ^= 1) {
+		cout << "DEPTH" << d << endl;
 		int n = q.size();
 		while (n--) {
 			const State& s = q.front();
+			printState(s);
 			q.pop();
 			int idx = memo[s.hash()];
 			bool final = true;
@@ -158,8 +160,7 @@ uint solve(const State& og, int depth)
 			}
 			if (final) {
 				res += outputH(s.hash()) * dp[sub_idx][idx];
-				printState(s);
-				cerr <<outputH(s.hash()) << " " <<dp[sub_idx][idx] << endl;
+			//	cerr <<outputH(s.hash()) << " " <<dp[sub_idx][idx] << endl;
 			}
 		}
 		memset(dp[sub_idx], 0, sizeof(dp[sub_idx]));
@@ -167,7 +168,6 @@ uint solve(const State& og, int depth)
 	int k = 0;
 	for (const auto& it : memo) {
 		res += dp[sub_idx][it.second]*outputH(it.first);
-			cerr << res<< " " << k++ << endl;
 		}
 	return res&M30;
 }
@@ -178,7 +178,6 @@ int main()
 	cin.tie(nullptr);
 	memo.reserve(1<<15);
 
-	cerr << "PUTAIN " << ((2*outputH(0161222161))&M30) << endl;
 	int depth;
 	cin >> depth; cin.ignore();
 
