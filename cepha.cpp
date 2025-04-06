@@ -87,26 +87,22 @@ constexpr pair<size_t, int_fast8_t> State::hash() const {
 int_fast8_t legal(const State& s, int_fast8_t pos, int_fast8_t capt)
 {
 	int_fast8_t res = 0;
-	if (capt & 8) {
-		if (pos < 3 || !s.g[pos-3])
-			return 0;
+	if ((capt & 8) && !(pos < 3 || !s.g[pos-3]))
 		res += s.g[pos-3];
-	}
-	if (capt & 4) {
-		if (pos%3 == 2 || !s.g[pos+1])
+	else if (capt & 8)
 			return 0;
+	if ((capt & 4) && !(pos%3 == 2 || !s.g[pos+1]))
 		res += s.g[pos+1];
-	}
-	if (capt & 2) {
-		if (pos >= 6 || !s.g[pos+3])
+	else if (capt & 4)
 			return 0;
+	if ((capt & 2) && !(pos >= 6 || !s.g[pos+3]))
 		res += s.g[pos+3];
-	}
-	if (capt & 1) {
-		if (pos%3 == 0 || !s.g[pos-1])
+	else if (capt & 2)
 			return 0;
+	if ((capt & 1) && !(pos%3 == 0 || !s.g[pos-1]))
 		res += s.g[pos-1];
-	}
+	else if (capt & 1)
+			return 0;
 
 	if (res > 6)
 			return 0;
@@ -126,7 +122,7 @@ void solve(const State& s, Value& v)
 		return;
 	}
 
-	pair<size_t, int_fast8_t> hash = s.hash();
+	const auto& hash = s.hash();
 	const auto& it = memo.find(hash.first);
 	if (it != memo.end()) {
 		int_fast8_t k = hash.second;
@@ -166,7 +162,6 @@ void solve(const State& s, Value& v)
 	}
 	if (final)
 		res = s;
-
 	permute(memo[hash.first], res, hash.second);
 	v=res;
 }
