@@ -14,8 +14,7 @@ COMP := $(MY_CXX) $(CXXFLAGS) $(LIB)
 COMP_BENCH := $(MY_CXX) -pg $(LIB)
 
 NAME ?= bin
-INC := $(wildcard inc/*)
-SRC := $(wildcard src/*)
+SRC := cepha.cpp
 
 all: $(NAME)
 
@@ -25,14 +24,18 @@ $(NAME):
 text :
 	cat $(INC) $(SRC) > $(NAME).txt
 
+test: re
+	./test/run.sh
+
 sub:
-	cat $(INC) <(tail -q -n+2 $(SRC)) | xclip -selection clipboard
+	xclip -selection clipboard < $(SRC)
 
 bench: clean
-	$(COMP_BENCH) -O0 $(SRC) -o bench
-	./bench < test/txt/12.txt
-	#gprof bench gmon.out | sed -E 's/std:://g; s/__detail::_//g; s/\bconst\b//g; s/<[^>]*>//g' > bench.txt
-	gprof bench gmon.out | grep -v "std::" > bench.txt
+	$(COMP_BENCH) $(SRC) -o bench
+	#$(COMP_BENCH) -DBENCH $(SRC) -o bench
+	./bench < test/txt/extra.txt
+	gprof bench gmon.out | sed -E 's/std:://g; s/__detail::_//g; s/\bconst\b//g; s/<[^>]*>//g' > bench.txt
+	#gprof bench gmon.out | grep -v "std::" > bench.txt
 	rm gmon.out
 
 clean:
