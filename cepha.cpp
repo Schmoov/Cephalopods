@@ -54,13 +54,13 @@ struct State {
 };
 
 void printState(const State& s) {
-    for (int i = 0; i < 9; i++) {
-        if (i % 3 == 0 && i != 0) {
-            cout << "\n";  // Move to the next row after 3 elements
-        }
-        cout << s.g[i] << " ";
-    }
-    cout << "\n----------\n";
+	for (int i = 0; i < 9; i++) {
+		if (i % 3 == 0 && i != 0) {
+			cout << "\n";  // Move to the next row after 3 elements
+		}
+		cout << s.g[i] << " ";
+	}
+	cout << "\n----------\n";
 }
 unordered_map<uint32_t, uint32_t> memo;
 
@@ -133,10 +133,12 @@ uint solve(const State& og, int depth)
 						if (it == memo.end()) {
 							memo[nextH] = new_idx;
 							dp[!sub_idx][new_idx++] = dp[sub_idx][idx];
+							q.push(next);
 						} else {
+							if(!dp[!sub_idx][it->second])
+								q.push(next);
 							dp[!sub_idx][it->second] += dp[sub_idx][idx];
 						}
-						q.push(next);
 					}
 				}
 				if (!has_cap) {
@@ -146,22 +148,27 @@ uint solve(const State& og, int depth)
 					if (it == memo.end()) {
 						memo[nextH] = new_idx;
 						dp[!sub_idx][new_idx++] = dp[sub_idx][idx];
+						q.push(next);
 					} else {
+						if(!dp[!sub_idx][it->second])
+							q.push(next);
 						dp[!sub_idx][it->second] += dp[sub_idx][idx];
 					}
-					q.push(next);
 				}
 			}
 			if (final) {
-				res += outputH(s.hash())*dp[sub_idx][idx];
+				res += outputH(s.hash()) * dp[sub_idx][idx];
 				printState(s);
-				cerr << res << endl;
+				cerr <<outputH(s.hash()) << " " <<dp[sub_idx][idx] << endl;
 			}
 		}
 		memset(dp[sub_idx], 0, sizeof(dp[sub_idx]));
 	}
-	for (const auto& it : memo)
+	int k = 0;
+	for (const auto& it : memo) {
 		res += dp[sub_idx][it.second]*outputH(it.first);
+			cerr << res<< " " << k++ << endl;
+		}
 	return res&M30;
 }
 
