@@ -56,7 +56,6 @@ constexpr u32 output(u32 val[9]) {
 	}
 	return res&M30;
 }
-
 //Bucket : depth and count
 using Bucket = u32[40];
 //From board hash to count per depth
@@ -96,10 +95,15 @@ void parse() {
 void bucketTransfer(u32 *res, u32 board, Bucket& buck, int idx)
 {
 	addToRes(res, board, buck[0]);
+	bool empty = true;
 	auto& nextBuck = memo[idx][board];
 	for (int depth = 1; depth < 40; depth++) {
 			nextBuck[depth-1] += buck[depth];
+			if (buck[depth])
+				empty = false;
 	}
+	if (empty)
+		memo[idx-1].erase(board);
 }
 
 constexpr int dieChange[12] = {1,-1,-1,-1,-1,-1,-1,-2,-2,-2,-2,-3};
@@ -116,6 +120,22 @@ void solve()
 		}
 		memo[9].clear();
 		for (int die = 8; die >= 0; die--) {
+			
+			for (auto& entry : memo[die]) {
+				u32 board = entry.first;
+				auto& buck = entry.second;
+				for (int pos = 0; pos < 9; pos++) {
+					if (at(board, pos))
+						continue;
+					u16 capFlag = legal[neigh(board, pos)];
+					if (capFlag == 1) {
+						u32 next = nextS(board, pos, 0);
+						bucketTransfer(res, next, buck, die + 1);
+						//memo[die].erase(board);
+					}
+				}
+			}
+			
 			for (auto& entry : memo[die]) {
 				u32 board = entry.first;
 				auto& buck = entry.second;
@@ -124,7 +144,7 @@ void solve()
 						continue;
 					running = true;
 					u16 capFlag = legal[neigh(board, pos)];
-					for (int capt = 0; capt < 12; capt++) {
+					for (int capt = 1; capt < 12; capt++) {
 						if (!(capFlag & (1<<capt)))
 							continue;
 						u32 next = nextS(board, pos, capt);
@@ -142,6 +162,12 @@ int main()
 {
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
+	memo[4].reserve(1<<6);
+	memo[5].reserve(1<<8);
+	memo[6].reserve(1<<10);
+	memo[7].reserve(1<<11);
+	memo[8].reserve(1<<12);
+	memo[9].reserve(1<<11);
 
 	parse();
 	solve();
