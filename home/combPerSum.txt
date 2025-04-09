@@ -1,0 +1,345 @@
+
+~~~~~Summing to 0~~~~~
+0 die :1 ways 
+
+~~~~~Summing to 1~~~~~
+1 die :9 ways 
+
+~~~~~Summing to 2~~~~~
+1 die :9 ways 
+2 die :36 ways 
+
+~~~~~Summing to 3~~~~~
+1 die :9 ways 
+2 die :72 ways 
+3 die :84 ways 
+
+~~~~~Summing to 4~~~~~
+1 die :9 ways 
+2 die :108 ways 
+3 die :252 ways 
+4 die :126 ways 
+
+~~~~~Summing to 5~~~~~
+1 die :9 ways 
+2 die :144 ways 
+3 die :504 ways 
+4 die :504 ways 
+5 die :126 ways 
+
+~~~~~Summing to 6~~~~~
+1 die :9 ways 
+2 die :180 ways 
+3 die :840 ways 
+4 die :1260 ways 
+5 die :630 ways 
+6 die :84 ways 
+
+~~~~~Summing to 7~~~~~
+2 die :216 ways 
+3 die :1260 ways 
+4 die :2520 ways 
+5 die :1890 ways 
+6 die :504 ways 
+7 die :36 ways 
+
+~~~~~Summing to 8~~~~~
+2 die :180 ways 
+3 die :1764 ways 
+4 die :4410 ways 
+5 die :4410 ways 
+6 die :1764 ways 
+7 die :252 ways 
+8 die :9 ways 
+
+~~~~~Summing to 9~~~~~
+2 die :144 ways 
+3 die :2100 ways 
+4 die :7056 ways 
+5 die :8820 ways 
+6 die :4704 ways 
+7 die :1008 ways 
+8 die :72 ways 
+9 die :1 ways 
+
+~~~~~Summing to 10~~~~~
+2 die :108 ways 
+3 die :2268 ways 
+4 die :10080 ways 
+5 die :15876 ways 
+6 die :10584 ways 
+7 die :3024 ways 
+8 die :324 ways 
+9 die :9 ways 
+
+~~~~~Summing to 11~~~~~
+2 die :72 ways 
+3 die :2268 ways 
+4 die :13104 ways 
+5 die :25830 ways 
+6 die :21168 ways 
+7 die :7560 ways 
+8 die :1080 ways 
+9 die :45 ways 
+
+~~~~~Summing to 12~~~~~
+2 die :36 ways 
+3 die :2100 ways 
+4 die :15750 ways 
+5 die :38430 ways 
+6 die :38304 ways 
+7 die :16632 ways 
+8 die :2970 ways 
+9 die :165 ways 
+
+~~~~~Summing to 13~~~~~
+3 die :1764 ways 
+4 die :17640 ways 
+5 die :52920 ways 
+6 die :63504 ways 
+7 die :33012 ways 
+8 die :7128 ways 
+9 die :495 ways 
+
+~~~~~Summing to 14~~~~~
+3 die :1260 ways 
+4 die :18396 ways 
+5 die :68040 ways 
+6 die :97524 ways 
+7 die :60012 ways 
+8 die :15372 ways 
+9 die :1287 ways 
+
+~~~~~Summing to 15~~~~~
+3 die :840 ways 
+4 die :17640 ways 
+5 die :82026 ways 
+6 die :139944 ways 
+7 die :101052 ways 
+8 die :30312 ways 
+9 die :2994 ways 
+
+~~~~~Summing to 16~~~~~
+3 die :504 ways 
+4 die :15750 ways 
+5 die :92610 ways 
+6 die :188748 ways 
+7 die :159012 ways 
+8 die :55323 ways 
+9 die :6354 ways 
+
+~~~~~Summing to 17~~~~~
+3 die :252 ways 
+4 die :13104 ways 
+5 die :98280 ways 
+6 die :239904 ways 
+7 die :235368 ways 
+8 die :94320 ways 
+9 die :12465 ways 
+
+~~~~~Summing to 18~~~~~
+3 die :84 ways 
+4 die :10080 ways 
+5 die :98280 ways 
+6 die :288204 ways 
+7 die :329112 ways 
+8 die :151272 ways 
+9 die :22825 ways 
+
+~~~~~Summing to 19~~~~~
+4 die :7056 ways 
+5 die :92610 ways 
+6 die :328104 ways 
+7 die :436212 ways 
+8 die :229392 ways 
+9 die :39303 ways 
+
+~~~~~Summing to 20~~~~~
+4 die :4410 ways 
+5 die :82026 ways 
+6 die :354564 ways 
+7 die :549612 ways 
+8 die :330192 ways 
+9 die :63999 ways 
+
+~~~~~Summing to 21~~~~~
+4 die :2520 ways 
+5 die :68040 ways 
+6 die :363888 ways 
+7 die :659772 ways 
+8 die :452592 ways 
+9 die :98979 ways 
+
+~~~~~Summing to 22~~~~~
+4 die :1260 ways 
+5 die :52920 ways 
+6 die :354564 ways 
+7 die :755748 ways 
+8 die :592272 ways 
+9 die :145899 ways 
+
+~~~~~Summing to 23~~~~~
+4 die :504 ways 
+5 die :38430 ways 
+6 die :328104 ways 
+7 die :826812 ways 
+8 die :741456 ways 
+9 die :205560 ways 
+
+~~~~~Summing to 24~~~~~
+4 die :126 ways 
+5 die :25830 ways 
+6 die :288204 ways 
+7 die :864612 ways 
+8 die :889317 ways 
+9 die :277464 ways 
+
+~~~~~Summing to 25~~~~~
+5 die :15876 ways 
+6 die :239904 ways 
+7 die :864612 ways 
+8 die :1023192 ways 
+9 die :359469 ways 
+
+~~~~~Summing to 26~~~~~
+5 die :8820 ways 
+6 die :188748 ways 
+7 die :826812 ways 
+8 die :1130292 ways 
+9 die :447669 ways 
+
+~~~~~Summing to 27~~~~~
+5 die :4410 ways 
+6 die :139944 ways 
+7 die :755748 ways 
+8 die :1199592 ways 
+9 die :536569 ways 
+
+~~~~~Summing to 28~~~~~
+5 die :1890 ways 
+6 die :97524 ways 
+7 die :659772 ways 
+8 die :1223586 ways 
+9 die :619569 ways 
+
+~~~~~Summing to 29~~~~~
+5 die :630 ways 
+6 die :63504 ways 
+7 die :549612 ways 
+8 die :1199592 ways 
+9 die :689715 ways 
+
+~~~~~Summing to 30~~~~~
+5 die :126 ways 
+6 die :38304 ways 
+7 die :436212 ways 
+8 die :1130292 ways 
+9 die :740619 ways 
+
+~~~~~Summing to 31~~~~~
+6 die :21168 ways 
+7 die :329112 ways 
+8 die :1023192 ways 
+9 die :767394 ways 
+
+~~~~~Summing to 32~~~~~
+6 die :10584 ways 
+7 die :235368 ways 
+8 die :889317 ways 
+9 die :767394 ways 
+
+~~~~~Summing to 33~~~~~
+6 die :4704 ways 
+7 die :159012 ways 
+8 die :741456 ways 
+9 die :740619 ways 
+
+~~~~~Summing to 34~~~~~
+6 die :1764 ways 
+7 die :101052 ways 
+8 die :592272 ways 
+9 die :689715 ways 
+
+~~~~~Summing to 35~~~~~
+6 die :504 ways 
+7 die :60012 ways 
+8 die :452592 ways 
+9 die :619569 ways 
+
+~~~~~Summing to 36~~~~~
+6 die :84 ways 
+7 die :33012 ways 
+8 die :330192 ways 
+9 die :536569 ways 
+
+~~~~~Summing to 37~~~~~
+7 die :16632 ways 
+8 die :229392 ways 
+9 die :447669 ways 
+
+~~~~~Summing to 38~~~~~
+7 die :7560 ways 
+8 die :151272 ways 
+9 die :359469 ways 
+
+~~~~~Summing to 39~~~~~
+7 die :3024 ways 
+8 die :94320 ways 
+9 die :277464 ways 
+
+~~~~~Summing to 40~~~~~
+7 die :1008 ways 
+8 die :55323 ways 
+9 die :205560 ways 
+
+~~~~~Summing to 41~~~~~
+7 die :252 ways 
+8 die :30312 ways 
+9 die :145899 ways 
+
+~~~~~Summing to 42~~~~~
+7 die :36 ways 
+8 die :15372 ways 
+9 die :98979 ways 
+
+~~~~~Summing to 43~~~~~
+8 die :7128 ways 
+9 die :63999 ways 
+
+~~~~~Summing to 44~~~~~
+8 die :2970 ways 
+9 die :39303 ways 
+
+~~~~~Summing to 45~~~~~
+8 die :1080 ways 
+9 die :22825 ways 
+
+~~~~~Summing to 46~~~~~
+8 die :324 ways 
+9 die :12465 ways 
+
+~~~~~Summing to 47~~~~~
+8 die :72 ways 
+9 die :6354 ways 
+
+~~~~~Summing to 48~~~~~
+8 die :9 ways 
+9 die :2994 ways 
+
+~~~~~Summing to 49~~~~~
+9 die :1287 ways 
+
+~~~~~Summing to 50~~~~~
+9 die :495 ways 
+
+~~~~~Summing to 51~~~~~
+9 die :165 ways 
+
+~~~~~Summing to 52~~~~~
+9 die :45 ways 
+
+~~~~~Summing to 53~~~~~
+9 die :9 ways 
+
+~~~~~Summing to 54~~~~~
+9 die :1 ways 

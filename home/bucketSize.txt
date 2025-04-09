@@ -1,0 +1,20 @@
+~~~~~0 die makes 1 arrangements at most reached for sum=0~~~~~
+
+~~~~~1 die makes 9 arrangements at most reached for sum=6~~~~~
+
+~~~~~2 die makes 216 arrangements at most reached for sum=7~~~~~
+
+~~~~~3 die makes 2268 arrangements at most reached for sum=11~~~~~
+
+~~~~~4 die makes 18396 arrangements at most reached for sum=14~~~~~
+
+~~~~~5 die makes 98280 arrangements at most reached for sum=18~~~~~
+
+~~~~~6 die makes 363888 arrangements at most reached for sum=21~~~~~
+
+~~~~~7 die makes 864612 arrangements at most reached for sum=25~~~~~
+
+~~~~~8 die makes 1223586 arrangements at most reached for sum=28~~~~~
+
+~~~~~9 die makes 767394 arrangements at most reached for sum=32~~~~~
+
