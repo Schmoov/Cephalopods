@@ -6,7 +6,7 @@ ifeq ($(FF), true)
 endif
 
 ifeq ($(DEBUG), true)
-	CXXFLAGS := -Wall -Wextra -pedantic -g3 #
+	CXXFLAGS := -Wall -Wextra -pedantic -g3 -DBENCH
 endif
 
 LIB ?= -lm -lpthread -ldl -lcrypt
@@ -33,7 +33,7 @@ sub:
 bench: clean
 	#$(COMP_BENCH) $(SRC) -o bench
 	$(COMP_BENCH) -DBENCH $(SRC) -o bench
-	./bench < test/txt/extra.txt
+	./bench < test/txt/11.txt
 	gprof bench gmon.out | sed -E 's/std:://g; s/__detail::_//g; s/\bconst\b//g; s/<[^>]*>//g' > bench.txt
 	#gprof bench gmon.out | grep -v "std::" > bench.txt
 	rm gmon.out
