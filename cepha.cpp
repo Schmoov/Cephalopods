@@ -25,16 +25,16 @@ constexpr int legal[] ={1,1,1,1,1,1,1,1,1,2,2,2,2,2,1,1,1,2,2,2,2,1,1,1,1,2,2,2,
 constexpr u32 M30 = 0x3fffffff;
 constexpr u32 P10[9] = {100'000'000, 10'000'000, 1'000'000, 100'000, 10'000, 1'000, 100, 10, 1};
 using State = u32;
-unordered_map<u32, array<u32,2>> memo[2];
+unordered_map<u32, u32[8]> memo[2];
 const u8 perm[8][9] = {
 	{0,1,2,3,4,5,6,7,8},
-	{2,1,0,5,4,3,8,7,6},
-	{6,7,8,3,4,5,0,1,2},
-	{0,3,6,1,4,7,2,5,8},
-	{8,5,2,7,4,1,6,3,0},
+	{6,3,0,7,4,1,8,5,2}, //r
 	{8,7,6,5,4,3,2,1,0},
-	{6,3,0,7,4,1,8,5,2},
-	{2,5,8,1,4,7,0,3,6}
+	{2,5,8,1,4,7,0,3,6},
+	{2,1,0,5,4,3,8,7,6}, //s
+	{0,3,6,1,4,7,2,5,8}, //sr
+	{6,7,8,3,4,5,0,1,2},
+	{8,5,2,7,4,1,6,3,0},
 };
 
 u32 parse() {
@@ -63,11 +63,16 @@ constexpr u32 posShift(u8 val, u8 pos) {
 constexpr u8 at(State s, u8 pos) {
 	return (s>>(3*pos))&7;
 }
-
-void addToRes(u32 res[9], State s, array<u32,2>& cnt) {
+void printState(State s) {
+	for (int i = 8; i >=0; i--) {
+		cerr << (int)at(s, i) << ((i % 3) ? " " : "\n");
+	}
+	cerr << '\n';
+}
+void addToRes(u32 res[9], State s, u32 cnt[8]) {
 	for (int pos = 0; pos < 9; pos++)
-		for (int per = 0; per < 2; per++)
-			res[pos] += at(s, perm[per][pos]) * cnt[per];
+		for (int per = 0; per < 8; per++)
+			res[perm[per][pos]] += at(s,pos) * cnt[per];
 }
 
 constexpr u16 neigh(u32 g, u8 pos) {
@@ -90,36 +95,58 @@ constexpr State nextS(State s, u8 pos, u8 capt) {
 }
 
 constexpr pair<u32, u8> canon(State s) {
-	u32 alt = 0;
-	for (int i = 0; i < 9; i++) {
-		alt |= posShift(at(s, i), perm[1][i]);
+	u32 can = s;
+	u32 per = 0;
+	for (int p = 1; p < 8; p++) {
+		u32 alt = 0;
+		for (int i = 0; i < 9; i++) {
+			alt |= posShift(at(s, perm[p][i]), i);
+		}
+		if (alt < can) {
+			can = alt;
+			per = p;
+		}
 	}
-	if (alt < s)
-		return {alt, 1};
-	return {s, 0};
+	return {can, per};
 }
 
-//void swap(u32* a, u32* b) {int tmp = *a; *a=*b; *b=tmp;}
-State canonizeCnt(State s, array<u32,2>& cnt) {
-	pair<u32, u8> c = canon(s);
-	if (c.second)
-		swap(cnt[0], cnt[1]);
-	return c.first;
-}
+const u8 compo[8][8] = {
+	{0,1,2,3,4,5,6,7},
+	{1,2,3,0,7,4,5,6},
+	{2,3,0,1,6,7,4,5},
+	{3,0,1,2,5,6,7,4},
 
-void insert(bool sub_idx, State s, array<u32,2> cnt) {
-	s = canonizeCnt(s, cnt);
-	auto& entry = memo[sub_idx][s];
-	for (int i = 0; i < 2; i++) {
-		entry[i] += cnt[i];
+	{4,5,6,7,0,1,2,3},
+	{5,6,7,4,3,0,1,2},
+	{6,7,4,5,2,3,0,1},
+	{7,4,5,6,1,2,3,0}
+};
+const u8 compog[8][8] = {
+	{0,1,2,3,4,5,6,7},
+	{1,2,3,0,7,4,5,6},
+	{2,3,0,1,6,7,4,5},
+	{3,0,1,2,5,6,7,4},
+
+	{4,5,6,7,0,1,2,3},
+	{5,6,7,4,1,2,3,0},
+	{6,7,4,5,2,3,0,1},
+	{7,4,5,6,3,0,1,2}
+};
+
+void insert(bool sub_idx, State s, u32 cnt[8]) {
+	pair<u32, u8> p = canon(s);
+	auto& entry = memo[sub_idx][p.first];
+	for (int i = 0; i < 8; i++) {
+		entry[compo[p.second][i]] += cnt[i];
 	}
+
 }
 
 u32 solve(State og, int depth)
 {
 	u32 res[9] = {0};
 	bool sub_idx = 0;
-	array<u32, 2> degue = {1,0};
+	u32 degue[8] = {1,0,0,0,0,0,0,0};
 	insert(sub_idx, og, degue);
 	for (int d = depth; d > 0; d--, sub_idx ^= 1) {
 		memo[!sub_idx].clear();
