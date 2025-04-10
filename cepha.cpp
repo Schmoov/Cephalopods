@@ -24,36 +24,18 @@ constexpr int legal[] ={1,1,1,1,1,1,1,1,1,2,2,2,2,2,1,1,1,2,2,2,2,1,1,1,1,2,2,2,
 
 constexpr u32 M30 = 0x3fffffff;
 constexpr u32 P10[9] = {100'000'000, 10'000'000, 1'000'000, 100'000, 10'000, 1'000, 100, 10, 1};
-
-
-/*
-constexpr u16 neigh(u32 g, u8 pos) {
-	u16 u = 7;
-	if (pos < 6)
-		u = (g>>(3*(pos+3))) & 7;
-	u16 l = 7;
-	if (pos%3 != 2)
-		l = (g>>(3*(pos+1))) & 7;
-	u16 r = 7;
-	if (pos % 3)
-		r = (g>>(3*(pos-1))) & 7;
-	u16 d = 7;
-	if (pos >= 3)
-		d = (g>>(3*(pos-3))) & 7;
-	return (u<<9)|(l<<6)|(r<<3)|d;
-} 
-*/
-constexpr u16 neigh(u32 g, u8 pos) {
-	constexpr u16 oobMask[9] = {077, 07, 0707, 070, 0, 0700, 07070, 07000, 07700};
-	u64 hood = g;
-	hood <<= 3*(8-pos); 
-	hood = ((hood&U)>>(3*8)) | ((hood&L)>>(3*7)) | ((hood&R)>>(3*6)) | ((hood&D)>>(3*5));
-	return hood | oobMask[pos];
-} 
-constexpr u32 posShift(u8 val, u8 pos) {
-	u32 res = val;
-	return res << (3*pos);
-}
+using State = u32;
+unordered_map<u32, array<u32,2>> memo[2];
+const u8 perm[8][9] = {
+	{0,1,2,3,4,5,6,7,8},
+	{2,1,0,5,4,3,8,7,6},
+	{6,7,8,3,4,5,0,1,2},
+	{0,3,6,1,4,7,2,5,8},
+	{8,5,2,7,4,1,6,3,0},
+	{8,7,6,5,4,3,2,1,0},
+	{6,3,0,7,4,1,8,5,2},
+	{2,5,8,1,4,7,0,3,6}
+};
 
 u32 parse() {
 	u32 g = 0;
@@ -65,33 +47,6 @@ u32 parse() {
 	return g;
 }
 
-using State = u32;
-
-constexpr u8 at(State s, u8 pos) {
-	return (s>>(3*pos))&7;
-}
-
-constexpr State nextS(State s, u8 pos, u8 capt) {
-	u32 m = capMask[capt]>>(3*(8-pos));
-
-	u32 val = s&m;
-	val = val*0111111111;
-	val = (val>>(3*8))&7;
-	val += capt==0;
-	/*
-	val = ((val&0700700700)>>6) + ((val&0070070070)>>3) + (val&07007007);
-	val = ((val&07000000)>>18) + ((val&07000)>>9) + (val&07);
-	*/
-
-	return (s&~m) | posShift(val, pos);
-}
-
-
-
-
-unordered_map<u32, u32> memo[2];
-
-
 constexpr u32 output(u32 val[9]) {
 	u32 res = 0;
 	for (int i = 0; i < 9; i++) {
@@ -100,15 +55,77 @@ constexpr u32 output(u32 val[9]) {
 	return res&M30;
 }
 
-u32 solve(const State og, int depth)
+constexpr u32 posShift(u8 val, u8 pos) {
+	u32 res = val;
+	return res << (3*pos);
+}
+
+constexpr u8 at(State s, u8 pos) {
+	return (s>>(3*pos))&7;
+}
+
+void addToRes(u32 res[9], State s, array<u32,2>& cnt) {
+	for (int pos = 0; pos < 9; pos++)
+		for (int per = 0; per < 2; per++)
+			res[pos] += at(s, perm[per][pos]) * cnt[per];
+}
+
+constexpr u16 neigh(u32 g, u8 pos) {
+	constexpr u16 oobMask[9] = {077, 07, 0707, 070, 0, 0700, 07070, 07000, 07700};
+	u64 hood = g;
+	hood <<= 3*(8-pos); 
+	hood = ((hood&U)>>(3*8)) | ((hood&L)>>(3*7)) | ((hood&R)>>(3*6)) | ((hood&D)>>(3*5));
+	return hood | oobMask[pos];
+} 
+
+constexpr State nextS(State s, u8 pos, u8 capt) {
+	u32 m = capMask[capt]>>(3*(8-pos));
+
+	u32 val = s&m;
+	val = val*0111111111;
+	val = (val>>(3*8))&7;
+	val += capt==0;
+
+	return (s&~m) | posShift(val, pos);
+}
+
+constexpr pair<u32, u8> canon(State s) {
+	u32 alt = 0;
+	for (int i = 0; i < 9; i++) {
+		alt |= posShift(at(s, i), perm[1][i]);
+	}
+	if (alt < s)
+		return {alt, 1};
+	return {s, 0};
+}
+
+//void swap(u32* a, u32* b) {int tmp = *a; *a=*b; *b=tmp;}
+State canonizeCnt(State s, array<u32,2>& cnt) {
+	pair<u32, u8> c = canon(s);
+	if (c.second)
+		swap(cnt[0], cnt[1]);
+	return c.first;
+}
+
+void insert(bool sub_idx, State s, array<u32,2> cnt) {
+	s = canonizeCnt(s, cnt);
+	auto& entry = memo[sub_idx][s];
+	for (int i = 0; i < 2; i++) {
+		entry[i] += cnt[i];
+	}
+}
+
+u32 solve(State og, int depth)
 {
 	u32 res[9] = {0};
-	int new_idx = 1;
 	bool sub_idx = 0;
-	memo[0][og] = 1;
+	array<u32, 2> degue = {1,0};
+	insert(sub_idx, og, degue);
 	for (int d = depth; d > 0; d--, sub_idx ^= 1) {
 		memo[!sub_idx].clear();
-		for (const auto [s, cnt] : memo[sub_idx]) {
+		for (auto& entry : memo[sub_idx]) {
+			State s = entry.first;
+			auto& cnt = entry.second;
 			bool final = true;
 			for (u8 pos = 0; pos < 9; pos++) {
 				if (at(s,pos))
@@ -119,19 +136,20 @@ u32 solve(const State og, int depth)
 						continue;
 					final = false;
 					State next = nextS(s, pos, capt);
-					memo[!sub_idx][next] += cnt;
+					insert(!sub_idx, next, cnt);
 				}
 			}
 			if (final) {
-				for (int i = 0; i < 9; i++)
-					res[i] += at(s, i) * cnt;
+				addToRes(res, s, cnt);
 			}
 		}
 	}
-	for (const auto [s, cnt] : memo[sub_idx])
-		for (int i = 0; i < 9; i++)
-			res[i] += at(s, i) * cnt;
-	
+	for (auto& entry : memo[sub_idx]) {
+		State s = entry.first;
+		auto& cnt = entry.second;
+		addToRes(res, s, cnt);
+	}
+
 	return output(res);
 }
 

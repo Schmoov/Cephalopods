@@ -13,7 +13,7 @@ LIB ?= -lm -lpthread -ldl -lcrypt
 COMP := $(MY_CXX) $(CXXFLAGS) $(LIB)
 COMP_BENCH := $(MY_CXX) -pg $(LIB)
 
-NAME ?= bin
+NAME = bin
 SRC := cepha.cpp
 
 all: $(NAME)
@@ -25,7 +25,7 @@ text :
 	cat $(INC) $(SRC) > $(NAME).txt
 
 test: re
-	./test/run.sh
+	./test/run.sh 2>/dev/null
 
 sub:
 	xclip -selection clipboard < $(SRC)
