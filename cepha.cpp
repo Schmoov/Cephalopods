@@ -42,17 +42,38 @@ constexpr u32 M30 = 0x3fffffff;
 constexpr u32 P10[9] = {100'000'000, 10'000'000, 1'000'000, 100'000, 10'000, 1'000, 100, 10, 1};
 
 using State = u32;
-unordered_map<u32, u32[8]> memo[2];
+const u32 HASHMAX = (1<<16);
 
-u32 parse() {
-	u32 g = 0;
-	for (int i = 0; i < 9; i++) {
-		u32 val;
-		cin >> val; cin.ignore();
-		g = g | (val<<(3*i));
+struct Hashmap {
+	u32 *val;
+	const size_t maxSize = HASHMAX;
+
+	Hashmap() {
+		val = new u32[maxSize*9];
 	}
-	return g;
-}
+
+	u32* find(u32 s) {
+		//u16 hash = (s * 0x80008001) >> 16;
+		//u16 hash = (s * 2654435761) >> 11;
+		u32 x = s;
+		x^=(x>>13), x^=(x<<7), x^=(x>>17);
+		u16 hash = x;
+		while (val[hash*9] && val[hash*9] != s) {
+			hash++;
+		}
+		val[hash*9] = s;
+		return &(val[hash*9+1]);
+	}
+
+	void clear() {
+		//cerr << "order is : " << order << "\n";
+		//cerr << size << " entries : " << ((100.0)*size)/(1<<order) << "%\n";
+			//cerr << "growing\n";
+		memset(val, 0, 9*maxSize*sizeof(u32));
+	}
+};
+
+Hashmap memo[2];
 
 constexpr u32 output(u32 val[9]) {
 	u32 res = 0;
@@ -114,23 +135,48 @@ constexpr pair<u32, u8> canon(State s) {
 
 void insert(bool sub_idx, State s, u32 cnt[8]) {
 	pair<u32, u8> p = canon(s);
-	auto& entry = memo[sub_idx][p.first];
+	u32* entry = memo[sub_idx].find(p.first);
 	for (int i = 0; i < 8; i++) {
 		entry[compo[p.second][i]] += cnt[i];
 	}
 
 }
 
-u32 solve(State og, int depth)
+int parse() {
+	int depth;
+	cin >> depth; cin.ignore();
+	u32 s = 0;
+	for (int i = 0; i < 9; i++) {
+		u32 val;
+		cin >> val; cin.ignore();
+		s = s | (val<<(3*i));
+	}
+	u32 cnt[9] = {1,0,0,0,0,0,0,0,0};
+	for (u8 pos = 0; pos < 9; pos++) {
+		if (at(s,pos))
+			continue;
+		u16 capMask = legal[neigh(s, pos)];
+		for (int capt = 0; capt < 12; capt++) {
+			if (!(capMask & (1<<capt)))
+				continue;
+			State next = nextS(s, pos, capt);
+			insert(0, next, cnt);
+		}
+	}
+	return depth;
+}
+
+u32 solve()
 {
+	int depth = parse();
 	u32 res[9] = {0};
 	bool sub_idx = 0;
-	u32 degue[8] = {1,0,0,0,0,0,0,0};
-	insert(sub_idx, og, degue);
-	for (int d = depth; d > 0 && memo[sub_idx].size(); d--, sub_idx ^= 1) {
-		for (auto& entry : memo[sub_idx]) {
-			State s = entry.first;
-			auto& cnt = entry.second;
+	for (int d = depth-1; d > 0; d--, sub_idx ^= 1) {
+		for (int i = 0; i < HASHMAX; i++) {
+			if (!memo[sub_idx].val[i*9])
+				continue;
+			State s = memo[sub_idx].val[i*9];
+			u32* cnt = &(memo[sub_idx].val[i*9+1]);
 			bool final = true;
 			for (u8 pos = 0; pos < 9; pos++) {
 				if (at(s,pos))
@@ -150,10 +196,10 @@ u32 solve(State og, int depth)
 		}
 		memo[sub_idx].clear();
 	}
-	for (auto& entry : memo[sub_idx]) {
-		State s = entry.first;
-		auto& cnt = entry.second;
-		addToRes(res, s, cnt);
+	for (int i = 0; i < HASHMAX; i++) {
+		if (!memo[sub_idx].val[i*9])
+			continue;
+		addToRes(res, memo[sub_idx].val[i*9], &(memo[sub_idx].val[i*9+1]));
 	}
 
 	return output(res);
@@ -163,12 +209,6 @@ int main()
 {
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
-	memo[0].reserve(1<<16);
-	memo[1].reserve(1<<16);
 
-	int depth;
-	cin >> depth; cin.ignore();
-
-	State input = parse();
-	cout << (solve(input, depth)) << '\n';
+	cout << solve() << '\n';
 }
