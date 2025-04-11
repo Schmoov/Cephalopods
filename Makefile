@@ -6,7 +6,7 @@ ifeq ($(FF), true)
 endif
 
 ifeq ($(DEBUG), true)
-	CXXFLAGS := -Wall -Wextra -pedantic -g3 -DBENCH
+	CXXFLAGS := -Wall -Wextra -pedantic -g3 #-DBENCH
 endif
 
 LIB ?= -lm -lpthread -ldl -lcrypt
