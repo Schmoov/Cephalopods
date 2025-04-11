@@ -63,12 +63,7 @@ constexpr u32 posShift(u8 val, u8 pos) {
 constexpr u8 at(State s, u8 pos) {
 	return (s>>(3*pos))&7;
 }
-void printState(State s) {
-	for (int i = 8; i >=0; i--) {
-		cerr << (int)at(s, i) << ((i % 3) ? " " : "\n");
-	}
-	cerr << '\n';
-}
+
 void addToRes(u32 res[9], State s, u32 cnt[8]) {
 	for (int pos = 0; pos < 9; pos++)
 		for (int per = 0; per < 8; per++)
@@ -184,8 +179,8 @@ int main()
 {
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
-	memo[0].reserve(1<<19);
-	memo[1].reserve(1<<19);
+	memo[0].reserve(1<<16);
+	memo[1].reserve(1<<16);
 
 	int depth;
 	cin >> depth; cin.ignore();
