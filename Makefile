@@ -31,8 +31,8 @@ sub:
 	xclip -selection clipboard < $(SRC)
 
 bench: clean
-	#$(COMP_BENCH) $(SRC) -o bench
-	$(COMP_BENCH) -DBENCH $(SRC) -o bench
+	$(COMP_BENCH) $(SRC) -o bench
+	#$(COMP_BENCH) -DBENCH $(SRC) -o bench
 	./bench < test/txt/extra.txt
 	gprof bench gmon.out | sed -E 's/std:://g; s/__detail::_//g; s/\bconst\b//g; s/<[^>]*>//g' > bench.txt
 	#gprof bench gmon.out | grep -v "std::" > bench.txt

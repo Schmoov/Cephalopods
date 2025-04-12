@@ -1,0 +1,266 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 39.39      0.26     0.26  8946642     0.00     0.00  insert(bool, unsigned int, unsigned int*)
+ 24.24      0.42     0.16  8946642     0.00     0.00  Hashmap::find(bool, unsigned int)
+ 16.67      0.53     0.11        1   110.00   660.00  solve()
+  7.58      0.58     0.05  8946642     0.00     0.00  canon(unsigned int)
+  3.03      0.60     0.02  8946642     0.00     0.00  p4(unsigned int)
+  3.03      0.62     0.02  8946642     0.00     0.00  p5(unsigned int)
+  3.03      0.64     0.02  8946642     0.00     0.00  nextS(unsigned int, unsigned char, unsigned char)
+  1.52      0.65     0.01  8946642     0.00     0.00  p2(unsigned int)
+  1.52      0.66     0.01  8946642     0.00     0.00  p6(unsigned int)
+  0.00      0.66     0.00 25486407     0.00     0.00  at(unsigned int, unsigned char)
+  0.00      0.66     0.00 17893284     0.00     0.00  unsigned int& forward(remove_reference::type&)
+  0.00      0.66     0.00  8946642     0.00     0.00  p1(unsigned int)
+  0.00      0.66     0.00  8946642     0.00     0.00  p3(unsigned int)
+  0.00      0.66     0.00  8946642     0.00     0.00  p7(unsigned int)
+  0.00      0.66     0.00  8946642     0.00     0.00  posShift(unsigned char, unsigned char)
+  0.00      0.66     0.00  8946642     0.00     0.00  pair::pair(unsigned int&, unsigned int&)
+  0.00      0.66     0.00  7285541     0.00     0.00  neigh(unsigned int, unsigned char)
+  0.00      0.66     0.00    37201     0.00     0.00  addToRes(unsigned int, unsigned int*)
+  0.00      0.66     0.00      199     0.00     0.00  Hashmap::clear(bool)
+  0.00      0.66     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+  0.00      0.66     0.00        1     0.00     0.00  parse()
+  0.00      0.66     0.00        1     0.00     0.00  Hashmap::Hashmap()
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 1.52% of 0.66 seconds
+
+index % time    self  children    called     name
+                                                 
+[1]    100.0    0.00    0.66                 main [1]
+                0.11    0.55       1/1           solve() [2]
+-----------------------------------------------
+                0.11    0.55       1/1           main [1]
+[2]    100.0    0.11    0.55       1         solve() [2]
+                0.26    0.27 8946633/8946642     insert(bool, unsigned int, unsigned int*) [3]
+                0.02    0.00 8946633/8946642     nextS(unsigned int, unsigned char, unsigned char) [8]
+                0.00    0.00       1/1           parse() [11]
+                0.00    0.00 25151589/25486407     at(unsigned int, unsigned char) [18]
+                0.00    0.00 7285532/7285541     neigh(unsigned int, unsigned char) [25]
+                0.00    0.00   37201/37201       addToRes(unsigned int, unsigned int*) [26]
+                0.00    0.00     199/199         Hashmap::clear(bool) [27]
+-----------------------------------------------
+                0.00    0.00       9/8946642     parse() [11]
+                0.26    0.27 8946633/8946642     solve() [2]
+[3]     80.3    0.26    0.27 8946642         insert(bool, unsigned int, unsigned int*) [3]
+                0.16    0.00 8946642/8946642     Hashmap::find(bool, unsigned int) [4]
+                0.05    0.06 8946642/8946642     canon(unsigned int) [5]
+-----------------------------------------------
+                0.16    0.00 8946642/8946642     insert(bool, unsigned int, unsigned int*) [3]
+[4]     24.2    0.16    0.00 8946642         Hashmap::find(bool, unsigned int) [4]
+-----------------------------------------------
+                0.05    0.06 8946642/8946642     insert(bool, unsigned int, unsigned int*) [3]
+[5]     16.7    0.05    0.06 8946642         canon(unsigned int) [5]
+                0.02    0.00 8946642/8946642     p4(unsigned int) [6]
+                0.02    0.00 8946642/8946642     p5(unsigned int) [7]
+                0.01    0.00 8946642/8946642     p2(unsigned int) [9]
+                0.01    0.00 8946642/8946642     p6(unsigned int) [10]
+                0.00    0.00 8946642/8946642     p1(unsigned int) [20]
+                0.00    0.00 8946642/8946642     p3(unsigned int) [21]
+                0.00    0.00 8946642/8946642     p7(unsigned int) [22]
+                0.00    0.00 8946642/8946642     pair::pair(unsigned int&, unsigned int&) [24]
+-----------------------------------------------
+                0.02    0.00 8946642/8946642     canon(unsigned int) [5]
+[6]      3.0    0.02    0.00 8946642         p4(unsigned int) [6]
+-----------------------------------------------
+                0.02    0.00 8946642/8946642     canon(unsigned int) [5]
+[7]      3.0    0.02    0.00 8946642         p5(unsigned int) [7]
+-----------------------------------------------
+                0.00    0.00       9/8946642     parse() [11]
+                0.02    0.00 8946633/8946642     solve() [2]
+[8]      3.0    0.02    0.00 8946642         nextS(unsigned int, unsigned char, unsigned char) [8]
+                0.00    0.00 8946642/8946642     posShift(unsigned char, unsigned char) [23]
+-----------------------------------------------
+                0.01    0.00 8946642/8946642     canon(unsigned int) [5]
+[9]      1.5    0.01    0.00 8946642         p2(unsigned int) [9]
+-----------------------------------------------
+                0.01    0.00 8946642/8946642     canon(unsigned int) [5]
+[10]     1.5    0.01    0.00 8946642         p6(unsigned int) [10]
+-----------------------------------------------
+                0.00    0.00       1/1           solve() [2]
+[11]     0.0    0.00    0.00       1         parse() [11]
+                0.00    0.00       9/8946642     insert(bool, unsigned int, unsigned int*) [3]
+                0.00    0.00       9/8946642     nextS(unsigned int, unsigned char, unsigned char) [8]
+                0.00    0.00       9/25486407     at(unsigned int, unsigned char) [18]
+                0.00    0.00       9/7285541     neigh(unsigned int, unsigned char) [25]
+-----------------------------------------------
+                0.00    0.00       9/25486407     parse() [11]
+                0.00    0.00  334809/25486407     addToRes(unsigned int, unsigned int*) [26]
+                0.00    0.00 25151589/25486407     solve() [2]
+[18]     0.0    0.00    0.00 25486407         at(unsigned int, unsigned char) [18]
+-----------------------------------------------
+                0.00    0.00 17893284/17893284     pair::pair(unsigned int&, unsigned int&) [24]
+[19]     0.0    0.00    0.00 17893284         unsigned int& forward(remove_reference::type&) [19]
+-----------------------------------------------
+                0.00    0.00 8946642/8946642     canon(unsigned int) [5]
+[20]     0.0    0.00    0.00 8946642         p1(unsigned int) [20]
+-----------------------------------------------
+                0.00    0.00 8946642/8946642     canon(unsigned int) [5]
+[21]     0.0    0.00    0.00 8946642         p3(unsigned int) [21]
+-----------------------------------------------
+                0.00    0.00 8946642/8946642     canon(unsigned int) [5]
+[22]     0.0    0.00    0.00 8946642         p7(unsigned int) [22]
+-----------------------------------------------
+                0.00    0.00 8946642/8946642     nextS(unsigned int, unsigned char, unsigned char) [8]
+[23]     0.0    0.00    0.00 8946642         posShift(unsigned char, unsigned char) [23]
+-----------------------------------------------
+                0.00    0.00 8946642/8946642     canon(unsigned int) [5]
+[24]     0.0    0.00    0.00 8946642         pair::pair(unsigned int&, unsigned int&) [24]
+                0.00    0.00 17893284/17893284     unsigned int& forward(remove_reference::type&) [19]
+-----------------------------------------------
+                0.00    0.00       9/7285541     parse() [11]
+                0.00    0.00 7285532/7285541     solve() [2]
+[25]     0.0    0.00    0.00 7285541         neigh(unsigned int, unsigned char) [25]
+-----------------------------------------------
+                0.00    0.00   37201/37201       solve() [2]
+[26]     0.0    0.00    0.00   37201         addToRes(unsigned int, unsigned int*) [26]
+                0.00    0.00  334809/25486407     at(unsigned int, unsigned char) [18]
+-----------------------------------------------
+                0.00    0.00     199/199         solve() [2]
+[27]     0.0    0.00    0.00     199         Hashmap::clear(bool) [27]
+-----------------------------------------------
+                0.00    0.00       1/1           _GLOBAL__sub_I_memo [30]
+[28]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [28]
+                0.00    0.00       1/1           Hashmap::Hashmap() [29]
+-----------------------------------------------
+                0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [28]
+[29]     0.0    0.00    0.00       1         Hashmap::Hashmap() [29]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [18] at(unsigned int, unsigned char) [28] __static_initialization_and_destruction_0(int, int) [23] posShift(unsigned char, unsigned char)
+  [20] p1(unsigned int)        [5] canon(unsigned int)     [4] Hashmap::find(bool, unsigned int)
+   [9] p2(unsigned int)       [25] neigh(unsigned int, unsigned char) [27] Hashmap::clear(bool)
+  [21] p3(unsigned int)        [8] nextS(unsigned int, unsigned char, unsigned char) [29] Hashmap::Hashmap()
+   [6] p4(unsigned int)       [11] parse()                [24] pair::pair(unsigned int&, unsigned int&)
+   [7] p5(unsigned int)        [2] solve()                [19] unsigned int& forward(remove_reference::type&)
+  [10] p6(unsigned int)        [3] insert(bool, unsigned int, unsigned int*)
+  [22] p7(unsigned int)       [26] addToRes(unsigned int, unsigned int*)

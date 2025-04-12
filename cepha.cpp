@@ -1,10 +1,12 @@
 #ifndef BENCH
 #undef _GLIBCXX_DEBUG
 #pragma GCC optimize "Ofast,unroll-loops,omit-frame-pointer,inline"
+//#pragma GCC optimize "Ofast,unroll-loops,omit-frame-pointer"
 #pragma GCC option("arch=native", "tune=native", "no-zero-upper")
 #pragma GCC target("movbe,aes,pclmul,avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2,rdrnd,popcnt,bmi,bmi2,lzcnt")
 #endif
 #include <bits/stdc++.h>
+#include <x86intrin.h> 
 
 using namespace std;
 using u64 = uint64_t;
@@ -42,46 +44,62 @@ constexpr u32 M30 = 0x3fffffff;
 constexpr u32 P10[9] = {100'000'000, 10'000'000, 1'000'000, 100'000, 10'000, 1'000, 100, 10, 1};
 
 using State = u32;
-const u32 HASHMAX = (1<<16);
-
+const u32 HASHMAX = (1<<18);
+constexpr bool isFinal(State s)
+{
+	return 0 == ((s-0111111111) & ~s & 0444444444);
+}
 struct Hashmap {
-	u32 *val;
-	const size_t maxSize = HASHMAX;
+	u32 *key[2];
+	u32 *val[2];
+	u32	capG = 1<<12;
+	size_t cap[2] = {capG, capG};
+	u32 size[2];
 
 	Hashmap() {
-		val = new u32[maxSize*9];
+		size[0] = 0;
+		size[1] = 0;
+		key[0] = new u32[capG]();
+		key[1] = new u32[capG]();
+		val[0] = new u32[8*capG]();
+		val[1] = new u32[8*capG]();
 	}
 
-	u32* find(u32 s) {
+	u32* find(bool sub, u32 s) {
 		//u16 hash = (s * 0x80008001) >> 16;
 		//u16 hash = (s * 2654435761) >> 11;
-		u32 x = s;
-		x^=(x>>13), x^=(x<<7), x^=(x>>17);
-		u16 hash = x;
-		while (val[hash*9] && val[hash*9] != s) {
-			hash++;
+		u32 h = s;
+		h^=(h>>13), h^=(h<<7), h^=(h>>17);
+		h &= cap[sub]-1;
+		while (key[sub][h] && key[sub][h] != s) {
+			h = (h+1) & (cap[sub]-1);
 		}
-		val[hash*9] = s;
-		return &(val[hash*9+1]);
+		size[sub] += key[sub][h]==0;
+		key[sub][h] = s;
+		return &(val[sub][8*h]);
 	}
 
-	void clear() {
-		//cerr << "order is : " << order << "\n";
-		//cerr << size << " entries : " << ((100.0)*size)/(1<<order) << "%\n";
-			//cerr << "growing\n";
-		memset(val, 0, 9*maxSize*sizeof(u32));
+	void clear(bool sub) {
+		//cerr << fixed << setprecision(2);
+		//cerr << size[sub] << " entries : " << ((100.0)*size[sub])/(cap[sub]) <<"\n";
+
+		if (3*size[!sub] > 2*capG && capG < HASHMAX)
+			capG *= 2;
+		if (cap[sub] != capG) {
+			cap[sub] = capG;
+			delete key[sub];
+			delete val[sub];
+			key[sub] = new u32[cap[sub]]();
+			val[sub] = new u32[8*cap[sub]]();
+		} else {
+			memset(key[sub], 0, cap[sub]*sizeof(u32));
+			memset(val[sub], 0, 8*cap[sub]*sizeof(u32));
+		}
+		size[sub] = 0;
 	}
 };
 
-Hashmap memo[2];
-
-constexpr u32 output(u32 val[9]) {
-	u32 res = 0;
-	for (int i = 0; i < 9; i++) {
-		res += val[i]*P10[i];
-	}
-	return res&M30;
-}
+Hashmap memo;
 
 constexpr u32 posShift(u8 val, u8 pos) {
 	u32 res = val;
@@ -92,10 +110,12 @@ constexpr int at(State s, u8 pos) {
 	return (s>>(3*pos))&7;
 }
 
-constexpr void addToRes(u32 res[9], State s, u32 cnt[8]) {
+u32 addToRes(State s, u32 cnt[8]) {
+	u32 res = 0;
 	for (int pos = 0; pos < 9; pos++)
 		for (int per = 0; per < 8; per++)
-			res[perm[per][pos]] += at(s,pos) * cnt[per];
+			res += P10[perm[per][pos]] * at(s,pos) * cnt[per];
+	return res;
 }
 
 constexpr u16 neigh(u32 g, u8 pos) {
@@ -103,6 +123,13 @@ constexpr u16 neigh(u32 g, u8 pos) {
 	u64 hood = g;
 	hood <<= 3*(8-pos); 
 	hood = ((hood&U)>>(3*8)) | ((hood&L)>>(3*7)) | ((hood&R)>>(3*6)) | ((hood&D)>>(3*5));
+	return hood | oobMask[pos];
+} 
+u16 neigh2(u32 g, u8 pos) {
+	constexpr u16 oobMask[9] = {077, 07, 0707, 070, 0, 0700, 07070, 07000, 07700};
+	u64 hood = g;
+	hood <<= 3*(8-pos); 
+	hood = _pext_u64(hood, U|L|R|D);
 	return hood | oobMask[pos];
 } 
 
@@ -117,25 +144,80 @@ constexpr State nextS(State s, u8 pos, u8 capt) {
 	return (s&~m) | posShift(val, pos);
 }
 
-constexpr pair<u32, u8> canon(State s) {
-	u32 can = s;
-	u32 per = 0;
-	for (int p = 1; p < 8; p++) {
-		u32 alt = 0;
-		for (int i = 0; i < 9; i++) {
-			alt |= posShift(at(s, perm[p][i]), i);
-		}
-		if (alt < can) {
-			can = alt;
-			per = p;
-		}
-	}
-	return {can, per};
+constexpr State p1(State s) {
+	return 
+		((s&(0'700'007'000))>>6)
+		| ((s&(0'070'000'000))>>12)
+		| ((s&(0'007'000'000))>>18)
+		| ((s&(0'000'700'007))<<6)
+		| (s&(0'000'070'000))
+		| ((s&(0'000'000'700))<<18)
+		| ((s&(0'000'000'070))<<12);
+}
+constexpr State p2(State s) {
+	return 
+		((s&(0'700'000'000))>>24)
+		| ((s&(0'070'000'000))>>18)
+		| ((s&(0'007'000'000))>>12)
+		| ((s&(0'000'700'000))>>6)
+		| (s&(0'000'070'000))
+		| ((s&(0'000'007'000))<<6)
+		| ((s&(0'000'000'700))<<12)
+		| ((s&(0'000'000'070))<<18)
+		| ((s&(0'000'000'007))<<24);
+}
+constexpr State p3(State s) {
+	return 
+		((s&(0'700'000'000))>>18)
+		| ((s&(0'070'000'700))>>6)
+		| ((s&(0'007'000'070))<<6)
+		| ((s&(0'000'700'000))>>12)
+		| (s&(0'000'070'000))
+		| ((s&(0'000'007'000))<<12)
+		| ((s&(0'000'000'007))<<18);
+}
+constexpr State p4(State s) {
+	return 
+		(s&(0'070'070'070))
+		| ((s&(0'700'700'700))>>6)
+		| ((s&(0'007'007'007))<<6);
+}
+constexpr State p5(State s) {
+	return 
+		(s&0'700'070'007)
+		| ((s&(0'070'007'000))>>6)
+		| ((s&(0'007'000'000))>>12)
+		| ((s&(0'000'700'070))<<6)
+		| ((s&(0'000'000'700))<<12);
+}
+constexpr State p6(State s) {
+	return 
+		((s&(0'777'000'000))>>18)
+		| (s&(0'000'777'000))
+		| ((s&(0'000'000'777))<<18);
+}
+constexpr State p7(State s) {
+	return 
+		((s&(0'700'000'000))>>24)
+		| ((s&(0'070'700'000))>>12)
+		| (s&(0'007'070'700))
+		| ((s&(0'000'007'070))<<12)
+		| ((s&(0'000'000'007))<<24);
 }
 
-void insert(bool sub_idx, State s, u32 cnt[8]) {
+pair<u32, u8> canon(State s) {
+	u32 pr = 0;
+	u32 st[8] = {s, p1(s), p2(s), p3(s), p4(s), p5(s), p6(s), p7(s)};
+	for (int i = 1; i < 8; i++)
+		if (st[i] < st[0])
+			st[0] = st[i], pr = i;
+	return {st[0], pr};
+}
+
+void insert(bool sub, State s, u32 cnt[8]) {
 	pair<u32, u8> p = canon(s);
-	u32* entry = memo[sub_idx].find(p.first);
+	
+	u32* entry = memo.find(sub, p.first);
 	for (int i = 0; i < 8; i++) {
 		entry[compo[p.second][i]] += cnt[i];
 	}
@@ -151,7 +233,7 @@ int parse() {
 		cin >> val; cin.ignore();
 		s = s | (val<<(3*i));
 	}
-	u32 cnt[9] = {1,0,0,0,0,0,0,0,0};
+	u32 cnt[8] = {1,0,0,0,0,0,0,0};
 	for (u8 pos = 0; pos < 9; pos++) {
 		if (at(s,pos))
 			continue;
@@ -169,40 +251,40 @@ int parse() {
 u32 solve()
 {
 	int depth = parse();
-	u32 res[9] = {0};
-	bool sub_idx = 0;
-	for (int d = depth-1; d > 0; d--, sub_idx ^= 1) {
-		for (int i = 0; i < HASHMAX; i++) {
-			if (!memo[sub_idx].val[i*9])
+	u32 res = 0;
+	bool sub = 0;
+	for (int d = depth-1; d > 0; d--, sub ^= 1) {
+		for (int i = 0; i < memo.cap[sub]; i++) {
+			if (!memo.key[sub][i])
 				continue;
-			State s = memo[sub_idx].val[i*9];
-			u32* cnt = &(memo[sub_idx].val[i*9+1]);
 			bool final = true;
+			State s = memo.key[sub][i];
+			u32* cnt = &(memo.val[sub][8*i]);
 			for (u8 pos = 0; pos < 9; pos++) {
 				if (at(s,pos))
 					continue;
+				final = false;
 				u16 capMask = legal[neigh(s, pos)];
 				for (int capt = 0; capt < 12; capt++) {
 					if (!(capMask & (1<<capt)))
 						continue;
-					final = false;
 					State next = nextS(s, pos, capt);
-					insert(!sub_idx, next, cnt);
+					insert(!sub, next, cnt);
 				}
 			}
 			if (final) {
-				addToRes(res, s, cnt);
+				res += addToRes(s, cnt);
 			}
 		}
-		memo[sub_idx].clear();
+		memo.clear(sub);
 	}
-	for (int i = 0; i < HASHMAX; i++) {
-		if (!memo[sub_idx].val[i*9])
+	for (int i = 0; i < memo.cap[sub]; i++) {
+		if (!memo.key[sub][i])
 			continue;
-		addToRes(res, memo[sub_idx].val[i*9], &(memo[sub_idx].val[i*9+1]));
+		res += addToRes(memo.key[sub][i], &(memo.val[sub][8*i]));
 	}
 
-	return output(res);
+	return res&M30;
 }
 
 int main()
