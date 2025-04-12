@@ -5,8 +5,8 @@
 #pragma GCC option("arch=native", "tune=native", "no-zero-upper")
 #pragma GCC target("movbe,aes,pclmul,avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2,rdrnd,popcnt,bmi,bmi2,lzcnt")
 #endif
-#include <bits/stdc++.h>
 #include <x86intrin.h> 
+#include <bits/stdc++.h>
 
 using namespace std;
 using u64 = uint64_t;
@@ -68,8 +68,9 @@ struct Hashmap {
 	u32* find(bool sub, u32 s) {
 		//u16 hash = (s * 0x80008001) >> 16;
 		//u16 hash = (s * 2654435761) >> 11;
-		u32 h = s;
-		h^=(h>>13), h^=(h<<7), h^=(h>>17);
+		//u32 h = s;
+		//h^=(h>>13), h^=(h<<7), h^=(h>>17);
+		u32 h = _mm_crc32_u32(0,s);
 		h &= cap[sub]-1;
 		while (key[sub][h] && key[sub][h] != s) {
 			h = (h+1) & (cap[sub]-1);
@@ -257,13 +258,14 @@ u32 solve()
 		for (int i = 0; i < memo.cap[sub]; i++) {
 			if (!memo.key[sub][i])
 				continue;
-			bool final = true;
 			State s = memo.key[sub][i];
 			u32* cnt = &(memo.val[sub][8*i]);
+			if (isFinal(s)) {
+				res += addToRes(s,cnt);
+			}
 			for (u8 pos = 0; pos < 9; pos++) {
 				if (at(s,pos))
 					continue;
-				final = false;
 				u16 capMask = legal[neigh(s, pos)];
 				for (int capt = 0; capt < 12; capt++) {
 					if (!(capMask & (1<<capt)))
@@ -271,9 +273,6 @@ u32 solve()
 					State next = nextS(s, pos, capt);
 					insert(!sub, next, cnt);
 				}
-			}
-			if (final) {
-				res += addToRes(s, cnt);
 			}
 		}
 		memo.clear(sub);
