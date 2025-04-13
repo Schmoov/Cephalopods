@@ -59,19 +59,20 @@ struct Hashmap {
 	Hashmap() {
 		size[0] = 0;
 		size[1] = 0;
-		key[0] = new u32[capG]();
-		key[1] = new u32[capG]();
-		val[0] = new u32[8*capG]();
-		val[1] = new u32[8*capG]();
+		key[0] = new u32[HASHMAX]();
+		key[1] = new u32[HASHMAX]();
+		val[0] = new u32[8*HASHMAX]();
+		val[1] = new u32[8*HASHMAX]();
+	}
+
+	u32 hash(bool sub, u32 s) {
+		u32 h = s;
+		h^=(h>>13), h^=(h<<7), h^=(h>>17);
+		return h & cap[sub]-1;
 	}
 
 	u32* find(bool sub, u32 s) {
-		//u16 hash = (s * 0x80008001) >> 16;
-		//u16 hash = (s * 2654435761) >> 11;
-		//u32 h = s;
-		//h^=(h>>13), h^=(h<<7), h^=(h>>17);
-		u32 h = _mm_crc32_u32(0,s);
-		h &= cap[sub]-1;
+		u32 h = hash(sub, s);
 		while (key[sub][h] && key[sub][h] != s) {
 			h = (h+1) & (cap[sub]-1);
 		}
@@ -81,21 +82,13 @@ struct Hashmap {
 	}
 
 	void clear(bool sub) {
-		//cerr << fixed << setprecision(2);
-		//cerr << size[sub] << " entries : " << ((100.0)*size[sub])/(cap[sub]) <<"\n";
-
 		if (3*size[!sub] > 2*capG && capG < HASHMAX)
 			capG *= 2;
 		if (cap[sub] != capG) {
 			cap[sub] = capG;
-			delete key[sub];
-			delete val[sub];
-			key[sub] = new u32[cap[sub]]();
-			val[sub] = new u32[8*cap[sub]]();
-		} else {
-			memset(key[sub], 0, cap[sub]*sizeof(u32));
-			memset(val[sub], 0, 8*cap[sub]*sizeof(u32));
 		}
+		memset(key[sub], 0, cap[sub]*sizeof(u32));
+		memset(val[sub], 0, 8*cap[sub]*sizeof(u32));
 		size[sub] = 0;
 	}
 };
@@ -124,13 +117,6 @@ constexpr u16 neigh(u32 g, u8 pos) {
 	u64 hood = g;
 	hood <<= 3*(8-pos); 
 	hood = ((hood&U)>>(3*8)) | ((hood&L)>>(3*7)) | ((hood&R)>>(3*6)) | ((hood&D)>>(3*5));
-	return hood | oobMask[pos];
-} 
-u16 neigh2(u32 g, u8 pos) {
-	constexpr u16 oobMask[9] = {077, 07, 0707, 070, 0, 0700, 07070, 07000, 07700};
-	u64 hood = g;
-	hood <<= 3*(8-pos); 
-	hood = _pext_u64(hood, U|L|R|D);
 	return hood | oobMask[pos];
 } 
 
@@ -222,7 +208,6 @@ void insert(bool sub, State s, u32 cnt[8]) {
 	for (int i = 0; i < 8; i++) {
 		entry[compo[p.second][i]] += cnt[i];
 	}
-
 }
 
 int parse() {
